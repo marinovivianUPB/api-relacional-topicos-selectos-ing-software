@@ -82,6 +82,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         UsuarioCompleteResponse usuarioResponse = new UsuarioCompleteResponse();
         BeanUtils.copyProperties(usuario, usuarioResponse);
         usuarioResponse.setRol(usuario.getRol().getNombre());
+        log.debug("CREATED AT: "+usuario.getCreatedAt());
+        usuarioResponse.setCreatedAt(usuario.getCreatedAt());
         return usuarioResponse;
     }
 

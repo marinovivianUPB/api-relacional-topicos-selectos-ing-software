@@ -1,22 +1,29 @@
 package com.topicossoftware.marino.upb.edu.api.api.utils;
 
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@WebFilter(filterName = "JWTFilter", urlPatterns = {"/usuarios/*", "/compradores/*"})
+@Component
+@Log4j2
 public class JWTFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
+    @Autowired
+    private JWTVerifier verifier;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        log.debug("Ingresando a Filtro");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String token = httpRequest.getHeader("Token");
 
@@ -27,16 +34,22 @@ public class JWTFilter implements Filter {
                 // Continue with the request
                 chain.doFilter(request, response);
             } else {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
+                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Hubo un error al acceder el recurso");
             }
         } else {
-            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing");
+            ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "No se tienen las autorizaciones necesarias");
         }
     }
 
     private boolean isValidToken(String token) {
-        // Token validation logic (e.g., check if it's expired, signature match, etc.)
-        return token.equals("valid-token"); // Simplified for this example
+        log.info("Verificando token");
+        try {
+            DecodedJWT decodedJWT = verifier.verify(token);
+            return true;
+        } catch (JWTVerificationException e) {
+            log.info("Token no valido: "+e.getMessage());
+            return false;
+        }
     }
 
     @Override
