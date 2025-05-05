@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Service
@@ -44,9 +45,10 @@ public class AuthServiceImpl implements AuthService {
         LoginResponse loginResponse = new LoginResponse();
         try{
             String token = JWT.create()
-                    .withExpiresAt(new Date(System.currentTimeMillis() + 75000))
+                    .withExpiresAt(Date.from(Instant.now().plusSeconds(3600)))
                     .sign(algorithm);
             loginResponse.setToken(token);
+            loginResponse.setUsuarioId(usuario.getUsuarioId());
         } catch (JWTCreationException exception) {
             log.info("Hubo un problema al generar el token: " + exception.getMessage());
             throw new UsuarioServiceException("Contraseña o Email Incorrectos", "404");
