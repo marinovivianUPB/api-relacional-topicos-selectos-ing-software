@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
             log.info("Hubo un problema al generar el token: " + exception.getMessage());
             throw new UsuarioServiceException("Contraseña o Email Incorrectos", "404");
         }
+        log.info("Login Response: "+loginResponse.toString());
         return loginResponse;
     }
 

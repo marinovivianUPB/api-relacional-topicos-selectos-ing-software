@@ -23,9 +23,16 @@ public class JWTFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+
         log.debug("Ingresando a Filtro");
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        String token = httpRequest.getHeader("Token");
+
+        if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        String token = httpRequest.getHeader("token");
 
         if (token != null) {
             if (isValidToken(token)) {
