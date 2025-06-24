@@ -18,5 +18,6 @@ public class UsuarioResponse {
     private String apellidos;
     private LocalDateTime createdAt;
     private String rol;
+    private String carnetIdentidad;
     private long createdBy;
 }

@@ -59,8 +59,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .password(passwordEncoder.encode(password))
                 .build();
 
-        //TODO: CREAR REGEX PARA UNA CONTRASEÑA SEGURA
-
         try {
             usuarioRepository.save(usuario);
             log.info("Usuario Creado");
@@ -84,6 +82,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuarioResponse.setRol(usuario.getRol().getNombre());
         log.debug("CREATED AT: "+usuario.getCreatedAt());
         usuarioResponse.setCreatedAt(usuario.getCreatedAt());
+
+        if(usuario.getCreatedBy() != 0) {
+            Usuario creador = usuarioRepository.findById(usuario.getCreatedBy())
+                    .orElseThrow(
+                            () -> userDoesntExist(usuario.getCreatedBy())
+                    );
+            usuarioResponse.setCreador(creador.getNombres().split(" ")[0]+" "+creador.getApellidos().split(" ")[0]);
+        } else {
+            usuarioResponse.setCreador("Sistema");
+        }
+
         return usuarioResponse;
     }
 

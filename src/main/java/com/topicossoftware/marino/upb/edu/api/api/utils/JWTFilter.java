@@ -59,6 +59,10 @@ public class JWTFilter implements Filter {
         }
     }
 
+    public void setVerifier(JWTVerifier verifier) {
+        this.verifier = verifier;
+    }
+
     @Override
     public void destroy() {
         // Cleanup logic, if any
